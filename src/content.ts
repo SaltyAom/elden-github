@@ -1,5 +1,7 @@
 const banners = {
+	'assignmentUpdated': 'banners/assignment-updated.webp',
     codeReviewed: 'banners/code-reviewed.webp',
+    commentEdited: 'banners/comment-edited.webp',
     issueClosed: 'banners/issue-closed.webp',
     issueCommented: 'banners/issue-commented.webp',
     issueCreated: 'banners/issue-created.webp',
@@ -26,7 +28,9 @@ const sounds = {
 } as const
 
 const bannerSounds = {
+	assignmentUpdated: 'newItem',
     codeReviewed: 'newItem',
+    commentEdited: 'newItem',
     issueClosed: 'enemyFailed',
     issueCommented: 'newItem',
     issueCreated: 'enemyFailed',

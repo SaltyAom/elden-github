@@ -139,6 +139,23 @@ chrome.webRequest.onBeforeRequest.addListener(
                 dispatch('issueDuplicated', detail)
             else if (
                 partOfGraphQL({
+                    input: {
+                        body: '',
+                        bodyVersion: '',
+                        id: ''
+                    }
+                })
+            )
+                dispatch('commentEdited', detail)
+                else if (
+                    partOfGraphQL({
+                    input: {
+                    assignableId: ''
+                    }
+                    })
+                ) dispatch('assignmentUpdated', detail)
+            else if (
+                partOfGraphQL({
                     id: ''
                 })
             )

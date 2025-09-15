@@ -1,23 +1,14 @@
 {
     "name": "Elden GitHub",
     "description": "Elden Ring experience for GitHub",
-    "version": "1.0",
+    "version": "1.0.0",
     "manifest_version": 3,
-    "action": {
-        "default_icon": {
-            "16": "assets/elden-github-16.png",
-            "24": "assets/elden-github-24.png",
-            "32": "assets/elden-github-32.png"
-        },
-        "default_title": "My Extension Popup",
-        "default_popup": "popup.html"
-    },
     "icons": {
         "16": "assets/elden-github-16.png",
         "48": "assets/elden-github-48.png",
         "128": "assets/elden-github-128.png"
     },
-    "permissions": ["webRequest", "webRequestBlocking", "tabs", "storage"],
+    "permissions": ["webRequest", "tabs", "storage"],
     "host_permissions": ["https://github.com/*"],
     "background": {
         "service_worker": "background.js"
