@@ -1,5 +1,35 @@
 import type { Actions } from './content'
 
+const activePorts = new Map<
+    number, // tabId
+    chrome.runtime.Port
+>()
+
+const queuedActions = new Map<
+    number, // tabId
+    Actions
+>()
+
+chrome.runtime.onConnect.addListener((port) => {
+    const tabId = port.sender?.tab?.id
+    if (typeof tabId !== 'number') return
+
+    activePorts.set(tabId, port)
+    port.onDisconnect.addListener(() => {
+        activePorts.delete(tabId)
+    })
+
+    const action = queuedActions.get(tabId)
+    if (action) {
+        try {
+            port.postMessage({ action })
+            queuedActions.delete(tabId)
+        } catch (error) {
+            console.error('Failed to post action to port:', error)
+        }
+    }
+})
+
 function dispatch(
     action: Actions,
     details:
@@ -9,9 +39,15 @@ function dispatch(
     const tabId = details.tabId
     if (typeof tabId !== 'number' || !tabId) return
 
-    chrome.tabs.sendMessage(tabId, {
-        action
-    })
+    const port = activePorts.get(tabId)
+    if (typeof port === 'undefined') {
+        // For actions that trigger client-side navigation (such as submitting a PR review), the port gets destroyed during the page transition.
+        // To handle this, the action should be stored once and then flushed after reconnecting.
+        queuedActions.set(tabId, action)
+        return
+    }
+
+    port.postMessage({ action })
 }
 
 function partialShapeMatch(
