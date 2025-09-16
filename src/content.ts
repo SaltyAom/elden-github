@@ -64,12 +64,34 @@ const delays = {
     repoDeleted: 0
 } as const satisfies Partial<{ [delay in Actions]: number }>
 
-// Listen for background messages
-chrome.runtime.onMessage.addListener((message?: { action?: Actions }) => {
-    if (!message?.action) return
+// Receive messages from background script
+let port: chrome.runtime.Port | null = null
+function connectPort() {
+    port = chrome.runtime.connect()
+    port.onDisconnect.addListener(() => {
+        port = null
+    })
 
-    show(message.action)
+    port.onMessage.addListener((message?: { action?: Actions }) => {
+        if (!message?.action) return
+        show(message.action)
+    })
+}
+window.addEventListener('pageshow', (e) => {
+    // Re-establish the connection if page is restored from bfcache
+    // https://developer.chrome.com/blog/bfcache-extension-messaging-changes
+    if (e.persisted && !port) {
+        connectPort()
+    }
 })
+window.addEventListener('pagehide', (e) => {
+    // Destroy the port when page is put into bfcache
+    if (e.persisted && port) {
+        port.disconnect()
+    }
+})
+// Initial connection
+connectPort()
 
 function show(
     action: Actions,
